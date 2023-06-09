@@ -9,9 +9,15 @@ from datetime import datetime, time
 from time import sleep
 import schedule
 
+# TODO
+# 把.idea文件夹显示出来
+
+# TODO 🌟🌟🌟
+# 可以改成预约多个号码
+# 优先级高的在后面
 phone_num = "13129185168"
 reserve_time = '12:00'
-cnt_of_tabs = 10
+cnt_of_tabs = 5
 script_start_time = '11:59'
 
 
@@ -33,10 +39,17 @@ def reserve_repeatedly():
     options.add_experimental_option("detach", True)
     chrome = webdriver.Chrome(options=options)
     for i in range(1, cnt_of_tabs + 1):
-        routine(chrome)
-        if i != cnt_of_tabs:
-            chrome.switch_to.new_window('tab')
-    wait_for_specific_time()
+        # TODO
+        # try-catch wrap一下
+        try:
+            routine(chrome)
+            if i != cnt_of_tabs:
+                chrome.switch_to.new_window('tab')
+        except Exception:
+            print('填写电话号码和进行选项时出现未知错误')
+        finally:
+            continue
+    wait_for_reserve_time()
     current_try_time = 1
     for current_tab in reversed(chrome.window_handles):
         if current_try_time != 1:
@@ -75,7 +88,7 @@ def reserve_repeatedly():
                 chrome.close()
 
 
-def wait_for_specific_time():
+def wait_for_reserve_time():
     start_time = time(*(map(int, reserve_time.split(':'))))
     sleep_times = 1
     while start_time > datetime.today().time():  # you can add here any additional variable to break loop if necessary
