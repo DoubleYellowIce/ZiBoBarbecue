@@ -12,16 +12,14 @@ import schedule
 # TODO
 # 把.idea文件夹显示出来
 
-# TODO 🌟🌟🌟
-# 可以改成预约多个号码
-# 优先级高的在后面
-phone_num = "13129185168"
+# 把想预约的电话号码输入进去，优先级高的在后面。
+phone_nums = ["13326271573", "13326271574", "13129185166"]
 reserve_time = '12:00'
-cnt_of_tabs = 5
+cnt_of_tabs = len(phone_nums)
 script_start_time = '11:59'
 
 
-def routine(chrome):
+def routine(chrome, phone_num):
     chrome.get("https://yy.bcwhkj.cn/h5/y.html?vs=12")
     phone_num_input = WebDriverWait(chrome, 5).until(
         EC.element_to_be_clickable((By.CLASS_NAME, "yinying-auto"))
@@ -39,13 +37,12 @@ def reserve_repeatedly():
     options.add_experimental_option("detach", True)
     chrome = webdriver.Chrome(options=options)
     for i in range(1, cnt_of_tabs + 1):
-        # TODO
-        # try-catch wrap一下
         try:
-            routine(chrome)
+            routine(chrome, phone_nums[i - 1])
             if i != cnt_of_tabs:
                 chrome.switch_to.new_window('tab')
         except Exception:
+            # 这里可能出现的异常不确定
             print('填写电话号码和进行选项时出现未知错误')
         finally:
             continue
@@ -91,10 +88,10 @@ def reserve_repeatedly():
 def wait_for_reserve_time():
     start_time = time(*(map(int, reserve_time.split(':'))))
     sleep_times = 1
-    while start_time > datetime.today().time():  # you can add here any additional variable to break loop if necessary
+    while start_time > datetime.today().time():
         print('未到开抢时间，第' + str(sleep_times) + '次休眠。')
         sleep_times += 1
-        sleep(0.05)  # you can change 0.1 sec interval to any other
+        sleep(0.05)
     print('休眠结束，开始抢号。')
 
 
